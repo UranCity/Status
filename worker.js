@@ -1,16 +1,17 @@
-async function handleRequest(request) {
-	let status;
-
-	fetch("https://api.mcsrvstat.us/simple/mc.urancity.ml").then((res) => {
-		if (res.status == 200 || res.status == 404) {
-			status = res.status;
+async function checkStatus() {
+	await fetch("https://api.mcsrvstat.us/simple/mc.urancity.ml").then((res) => {
+		if (res.status === 200 || res.status === 404) {
+			return res.status;
 		} else {
-			throw `Mauvais status renvoyé (${res.status}) (mcsrvstat.us)`;
-		};
+			console.warn(`Mauvais status renvoyé (${res.status}) (mcsrvstat.us)`);
+			return undefined;
+		}
 	});
-	
+}
+
+async function handleRequest(request) {
 	return Response.redirect(
-		`https://raw.githubusercontent.com/UranCity/Status/main/assets/${status}.png`,
+		`https://raw.githubusercontent.com/UranCity/Status/main/assets/${checkStatus()}.png`,
 		303
 	);
 }
